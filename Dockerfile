@@ -40,7 +40,6 @@ COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
 # Copy application code
 COPY --chown=nodejs:nodejs src/ ./src/
 COPY --chown=nodejs:nodejs package*.json ./
-COPY --chown=nodejs:nodejs .env.example ./
 
 # Create directory for generated labels with proper permissions
 RUN mkdir -p generated_labels && \
