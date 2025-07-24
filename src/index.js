@@ -538,7 +538,7 @@ app.use((error, req, res) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.all('/*splat', (req, res) => {
   const endpoints = [
     'GET /health',
     'POST /print',
@@ -556,7 +556,7 @@ app.use('*', (req, res) => {
   }
 
   res.status(404).json({
-    error: 'Endpoint not found',
+    error: `Endpoint ${req.originalUrl} not found`,
     availableEndpoints: endpoints
   });
 });
