@@ -29,6 +29,64 @@ A simple REST API that acts as a proxy to send print data to Zebra printers via 
 4. **View saved labels** (virtual mode only):
    - Open http://localhost:3000/viewer in your browser
 
+## Docker Deployment
+
+### 🐳 Quick Start with Docker
+
+#### Using Docker Compose (Recommended)
+```bash
+# Start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+```
+
+#### Using Docker directly
+```bash
+# Build the image
+docker build -t zebra-proxy .
+or
+docker build --target production -t zebra-proxy:prod .
+or
+docker build --target dev -t zebra-proxy:dev .
+
+# Run the container
+docker run -p 3000:3000 \
+  -e PRINTER_TYPE=virtual \
+  -e VIRTUAL_OUTPUT_FORMAT=png \
+  zebra-proxy
+```
+
+### ⚙️ Environment Configuration
+
+#### Docker Compose Environment Variables
+Edit `docker-compose.yml` or create a `.env` file:
+```env
+PRINTER_TYPE=virtual
+VIRTUAL_DPMM=8dpmm
+VIRTUAL_LABEL_WIDTH=4
+VIRTUAL_LABEL_HEIGHT=6
+VIRTUAL_OUTPUT_FORMAT=png
+API_PORT=3000
+```
+
+#### Volume Persistence
+Generated labels are stored in a Docker volume (`labels_data`) to persist between container restarts.
+
+### 🔧 Advanced Docker Configurations
+
+#### For USB Printer Access
+Uncomment these lines in `docker-compose.yml`:
+```yaml
+privileged: true
+devices:
+  - /dev/bus/usb:/dev/bus/usb
+```
+
 ## Installation
 
 1. Install dependencies:

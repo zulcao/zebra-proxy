@@ -1,0 +1,20 @@
+# Docker ignore file
+node_modules
+npm-debug.log
+.git
+.gitignore
+README.md
+.env
+.nyc_output
+coverage
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+-emv.example
+generated_labels
+*.log
+.DS_Store
+.vscode
+.idea
+docker-compose.override.yml

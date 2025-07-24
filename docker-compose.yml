@@ -1,0 +1,51 @@
+# Docker Compose for Zebra Proxy API
+version: '3.8'
+
+services:
+  zebra-proxy:
+    build: .
+    container_name: zebra-proxy
+    ports:
+      - "3000:3000"
+    environment:
+      # Printer Configuration
+      - PRINTER_TYPE=virtual
+      - PRINTER_HOST=192.168.1.100
+      - PRINTER_PORT=9100
+      
+      # USB Configuration (if needed)
+      - USB_VENDOR_ID=0x0a5f
+      - USB_PRODUCT_ID=
+      
+      # Virtual Printer Configuration
+      - VIRTUAL_DPMM=8dpmm
+      - VIRTUAL_LABEL_WIDTH=4
+      - VIRTUAL_LABEL_HEIGHT=6
+      - VIRTUAL_OUTPUT_FORMAT=png
+      - VIRTUAL_SAVE_DIRECTORY=/app/generated_labels
+      - VIRTUAL_BASE_URL=http://api.labelary.com/v1/printers
+      
+      # API Configuration
+      - API_PORT=3000
+    
+    volumes:
+      # Persist generated labels
+      - labels_data:/app/generated_labels
+    
+    restart: unless-stopped
+    
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    # For USB printer access (uncomment if using USB)
+    # privileged: true
+    # devices:
+    #   - /dev/bus/usb:/dev/bus/usb
+
+volumes:
+  labels_data:
+    driver: local

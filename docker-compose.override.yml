@@ -1,0 +1,20 @@
+# Docker Compose override for development
+version: '3.8'
+
+services:
+  zebra-proxy:
+    build:
+      context: .
+      target: development
+    volumes:
+      # Mount source code for development
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      # Mount local generated_labels for development
+      - ./generated_labels:/app/generated_labels
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    # Override user to allow file writes in development
+    user: root
