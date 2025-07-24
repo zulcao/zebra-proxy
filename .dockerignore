@@ -11,10 +11,14 @@ coverage
 .env.development.local
 .env.test.local
 .env.production.local
--emv.example
+.env.example
 generated_labels
 *.log
 .DS_Store
 .vscode
 .idea
 docker-compose.override.yml
+.github
+eslint-results.sarif
+trivy-results.sarif
+changelog.md

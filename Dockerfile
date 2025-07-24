@@ -7,13 +7,21 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN if [ -f package-lock.json ]; then \
+      npm ci --only=production && npm cache clean --force; \
+    else \
+      npm install --only=production && npm cache clean --force; \
+    fi
 
 # Development stage
 FROM base AS development
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN if [ -f package-lock.json ]; then \
+      npm ci; \
+    else \
+      npm install; \
+    fi
 COPY . .
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
