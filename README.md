@@ -87,6 +87,27 @@ devices:
   - /dev/bus/usb:/dev/bus/usb
 ```
 
+### ☸️ Kubernetes Deployment
+
+Deploy to Kubernetes using the provided manifests:
+```bash
+# Apply all configurations
+kubectl apply -f k8s/
+
+# Check deployment status
+kubectl get pods -l app=zebra-proxy
+
+# Access via port forward
+kubectl port-forward service/zebra-proxy-service 3000:80
+```
+
+#### Kubernetes Components
+- **Deployment**: `k8s/deployment.yaml` - Main application deployment with 2 replicas
+- **Service**: LoadBalancer service exposing port 80
+- **ConfigMap**: `k8s/configmap.yaml` - Configuration management
+- **PVC**: Persistent volume claim for label storage
+- **Ingress**: `k8s/ingress.yaml` - External access configuration
+
 ## Installation
 
 1. Install dependencies:

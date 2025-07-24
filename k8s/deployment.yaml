@@ -1,0 +1,87 @@
+# Kubernetes deployment for Zebra Proxy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zebra-proxy
+  labels:
+    app: zebra-proxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: zebra-proxy
+  template:
+    metadata:
+      labels:
+        app: zebra-proxy
+    spec:
+      containers:
+      - name: zebra-proxy
+        image: zebra-proxy:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PRINTER_TYPE
+          value: "virtual"
+        - name: VIRTUAL_DPMM
+          value: "8dpmm"
+        - name: VIRTUAL_LABEL_WIDTH
+          value: "4"
+        - name: VIRTUAL_LABEL_HEIGHT
+          value: "6"
+        - name: VIRTUAL_OUTPUT_FORMAT
+          value: "png"
+        - name: VIRTUAL_SAVE_DIRECTORY
+          value: "/app/generated_labels"
+        - name: API_PORT
+          value: "3000"
+        volumeMounts:
+        - name: labels-storage
+          mountPath: /app/generated_labels
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      volumes:
+      - name: labels-storage
+        persistentVolumeClaim:
+          claimName: zebra-proxy-labels-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zebra-proxy-service
+spec:
+  selector:
+    app: zebra-proxy
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: zebra-proxy-labels-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
