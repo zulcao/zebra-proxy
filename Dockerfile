@@ -1,26 +1,50 @@
 # Multi-stage Dockerfile for production optimization
 FROM node:24-alpine AS base
 
+# Install build dependencies for native modules (including USB support)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    linux-headers \
+    eudev-dev \
+    libusb-dev \
+    pkgconfig \
+    libc6-compat
+
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-RUN if [ -f package-lock.json ]; then \
-      npm ci --only=production && npm cache clean --force; \
+
+# Install dependencies with error handling
+RUN set -e; \
+    echo "Starting dependency installation..."; \
+    if [ -f package-lock.json ]; then \
+      echo "Using package-lock.json with npm ci..."; \
+      npm ci --omit=dev --verbose --no-audit || { \
+        echo "npm ci failed, trying without package-lock.json..."; \
+        rm -f package-lock.json; \
+        npm install --omit=dev --verbose --no-audit; \
+      }; \
     else \
-      npm install --only=production && npm cache clean --force; \
-    fi
+      echo "Using npm install..."; \
+      npm install --omit=dev --verbose --no-audit; \
+    fi && \
+    echo "Cleaning npm cache..." && \
+    npm cache clean --force && \
+    echo "Dependencies installed successfully!"
 
 # Development stage
 FROM base AS development
 WORKDIR /app
 COPY package*.json ./
 RUN if [ -f package-lock.json ]; then \
-      npm ci; \
+      npm ci --verbose; \
     else \
-      npm install; \
+      npm install --verbose; \
     fi
 COPY . .
 EXPOSE 3000
@@ -29,6 +53,9 @@ CMD ["npm", "run", "dev"]
 # Production stage
 FROM base AS production
 WORKDIR /app
+
+# Install runtime dependencies for USB support
+RUN apk add --no-cache eudev libusb
 
 # Create app user for security
 RUN addgroup -g 1001 -S nodejs && \
