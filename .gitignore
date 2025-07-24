@@ -9,3 +9,12 @@ yarn-error.log*
 coverage/
 dist/
 generated_labels/
+
+# GitHub Actions artifacts
+eslint-results.sarif
+trivy-results.sarif
+changelog.md
+
+# Temporary files
+*.tmp
+*.temp

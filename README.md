@@ -101,6 +101,78 @@ kubectl get pods -l app=zebra-proxy
 kubectl port-forward service/zebra-proxy-service 3000:80
 ```
 
+## 🚀 CI/CD Pipeline
+
+This project includes comprehensive GitHub Actions workflows for automated building, testing, and deployment.
+
+### Workflows
+
+#### 1. **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
+- **Triggers**: Push to `main`/`develop`, PRs to `main`
+- **Jobs**:
+  - **Test**: Runs on Node.js 18.x and 20.x
+  - **Security**: npm audit + Dockerfile scanning with Hadolint
+  - **Deploy**: Builds and pushes Docker image to GitHub Container Registry
+
+#### 2. **Docker Build** (`.github/workflows/docker-build.yml`)
+- **Triggers**: Push to `main`/`develop`, tags, PRs
+- **Features**:
+  - Multi-platform builds (AMD64, ARM64)
+  - Security scanning with Trivy
+  - Automatic tagging based on branch/tag
+  - Only pushes images on non-PR events
+
+#### 3. **Release** (`.github/workflows/release.yml`)
+- **Triggers**: Version tags (`v*.*.*`)
+- **Features**:
+  - Automatic GitHub releases with changelogs
+  - Semantic versioning Docker tags
+  - Multi-platform Docker images
+
+#### 4. **Code Quality** (`.github/workflows/code-quality.yml`)
+- **Triggers**: Push/PR to main branches
+- **Features**:
+  - ESLint with SARIF reporting
+  - Optional SonarCloud integration
+
+### Docker Images
+
+Images are automatically built and published to GitHub Container Registry:
+
+```bash
+# Latest from main branch
+docker pull ghcr.io/zulcao/zebra-proxy:latest
+
+# Specific version
+docker pull ghcr.io/zulcao/zebra-proxy:v1.0.0
+
+# Development version
+docker pull ghcr.io/zulcao/zebra-proxy:develop
+```
+
+### Dependency Updates
+
+Dependabot is configured to automatically update:
+- npm dependencies (weekly)
+- Docker base images (weekly)  
+- GitHub Actions (weekly)
+
+### Creating a Release
+
+1. Update version in `package.json`
+2. Create and push a tag:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+3. GitHub Actions will automatically:
+   - Build multi-platform Docker images
+   - Create a GitHub release with changelog
+   - Tag Docker images with semantic versions
+
+## Configuration
+```
+
 #### Kubernetes Components
 - **Deployment**: `k8s/deployment.yaml` - Main application deployment with 2 replicas
 - **Service**: LoadBalancer service exposing port 80
