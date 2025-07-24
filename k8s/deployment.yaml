@@ -6,7 +6,7 @@ metadata:
   labels:
     app: zebra-proxy
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: zebra-proxy
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: zebra-proxy
-        image: zebra-proxy:latest
+        image: ghcr.io/zulcao/zebra-proxy:latest
         ports:
         - containerPort: 3000
         env:
@@ -65,7 +65,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: zebra-proxy-service
+  name: zebra-proxy
 spec:
   selector:
     app: zebra-proxy
