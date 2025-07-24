@@ -36,7 +36,7 @@ console.log('Printer configuration:', {
   ...printerConfig,
   // Don't log sensitive details in production
   host: printerConfig.type === 'tcp' ? printerConfig.host : 
-        printerConfig.type === 'usb' ? 'USB' : 'Virtual (Labelary API)'
+    printerConfig.type === 'usb' ? 'USB' : 'Virtual (Labelary API)'
 });
 
 // Health check endpoint
@@ -220,15 +220,15 @@ app.get('/labels/:filename', (req, res) => {
     let contentType = 'application/octet-stream';
     
     switch (ext) {
-      case '.png':
-        contentType = 'image/png';
-        break;
-      case '.pdf':
-        contentType = 'application/pdf';
-        break;
-      case '.json':
-        contentType = 'application/json';
-        break;
+    case '.png':
+      contentType = 'image/png';
+      break;
+    case '.pdf':
+      contentType = 'application/pdf';
+      break;
+    case '.json':
+      contentType = 'application/json';
+      break;
     }
 
     res.setHeader('Content-Type', contentType);
@@ -528,7 +528,7 @@ app.get('/viewer', (req, res) => {
 });
 
 // Error handling middleware
-app.use((error, req, res, next) => {
+app.use((error, req, res) => {
   console.error('Unhandled error:', error);
   res.status(500).json({
     success: false,

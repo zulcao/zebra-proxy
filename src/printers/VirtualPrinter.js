@@ -27,7 +27,7 @@ class VirtualPrinter {
   generateFilename() {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const extension = this.outputFormat === 'pdf' ? 'pdf' : 
-                     this.outputFormat === 'json' ? 'json' : 'png';
+      this.outputFormat === 'json' ? 'json' : 'png';
     return `label_${timestamp}.${extension}`;
   }
 
@@ -81,7 +81,7 @@ class VirtualPrinter {
               
               let result = {
                 success: true,
-                message: `Label processed and saved successfully`,
+                message: 'Label processed and saved successfully',
                 labelCount: parseInt(totalCount),
                 outputFormat: this.outputFormat,
                 dataSize: data.length,
@@ -121,13 +121,13 @@ class VirtualPrinter {
 
   getAcceptHeader() {
     switch (this.outputFormat.toLowerCase()) {
-      case 'pdf':
-        return 'application/pdf';
-      case 'json':
-        return 'application/json';
-      case 'png':
-      default:
-        return 'image/png';
+    case 'pdf':
+      return 'application/pdf';
+    case 'json':
+      return 'application/json';
+    case 'png':
+    default:
+      return 'image/png';
     }
   }
 
