@@ -26,9 +26,9 @@ spec:
         - name: VIRTUAL_DPMM
           value: "8dpmm"
         - name: VIRTUAL_LABEL_WIDTH
-          value: "4"
+          value: "100"
         - name: VIRTUAL_LABEL_HEIGHT
-          value: "6"
+          value: "150"
         - name: VIRTUAL_OUTPUT_FORMAT
           value: "png"
         - name: VIRTUAL_SAVE_DIRECTORY

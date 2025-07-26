@@ -7,8 +7,8 @@ class VirtualPrinter {
   constructor(options = {}) {
     this.baseUrl = options.baseUrl || 'http://api.labelary.com/v1/printers';
     this.dpmm = options.dpmm || '8dpmm'; // 8dpmm (203 DPI), 12dpmm (300 DPI), 24dpmm (600 DPI)
-    this.labelWidth = options.labelWidth || '4'; // inches
-    this.labelHeight = options.labelHeight || '6'; // inches
+    this.labelWidth = options.labelWidth || '100'; // mm
+    this.labelHeight = options.labelHeight || '150'; // mm
     this.labelIndex = options.labelIndex || '0';
     this.outputFormat = options.outputFormat || 'png'; // png, pdf, json
     this.saveDirectory = options.saveDirectory || './generated_labels';
@@ -32,7 +32,7 @@ class VirtualPrinter {
   }
 
   async print(zplData) {
-    const url = `${this.baseUrl}/${this.dpmm}/labels/${this.labelWidth}x${this.labelHeight}/${this.labelIndex}/`;
+    const url = `${this.baseUrl}/${this.dpmm}/labels/${this.labelWidth / 25.4}x${this.labelHeight / 25.4}/${this.labelIndex}/`;
     
     return new Promise((resolve, reject) => {
       // Determine protocol
@@ -50,7 +50,7 @@ class VirtualPrinter {
       };
 
       console.log(`Sending ZPL to Labelary API: ${url}`);
-      console.log(`Label size: ${this.labelWidth}x${this.labelHeight} inches at ${this.dpmm}`);
+      console.log(`Label size: ${this.labelWidth}x${this.labelHeight} mm at ${this.dpmm}`);
       console.log(`Output format: ${this.outputFormat}`);
 
       const req = protocol.request(url, options, (res) => {

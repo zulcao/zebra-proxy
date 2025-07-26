@@ -68,8 +68,8 @@ Edit `docker-compose.yml` or create a `.env` file:
 ```env
 PRINTER_TYPE=virtual
 VIRTUAL_DPMM=8dpmm
-VIRTUAL_LABEL_WIDTH=4
-VIRTUAL_LABEL_HEIGHT=6
+VIRTUAL_LABEL_WIDTH=100
+VIRTUAL_LABEL_HEIGHT=150
 VIRTUAL_OUTPUT_FORMAT=png
 API_PORT=3000
 ```
@@ -207,8 +207,8 @@ USB_PRODUCT_ID=0x0001  # Optional: specific product ID
 # For Virtual printer (Labelary API):
 PRINTER_TYPE=virtual
 VIRTUAL_DPMM=8dpmm
-VIRTUAL_LABEL_WIDTH=4
-VIRTUAL_LABEL_HEIGHT=6
+VIRTUAL_LABEL_WIDTH=100
+VIRTUAL_LABEL_HEIGHT=150
 VIRTUAL_OUTPUT_FORMAT=png
 
 # API settings:
@@ -312,8 +312,8 @@ Opens a web interface to view, manage, and delete saved labels (only available w
 | `USB_VENDOR_ID` | USB vendor ID (hex format) | `0x0a5f` | No |
 | `USB_PRODUCT_ID` | USB product ID (hex format) | auto-detect | No |
 | `VIRTUAL_DPMM` | Print density for virtual printer | `8dpmm` | No |
-| `VIRTUAL_LABEL_WIDTH` | Label width in inches | `4` | No |
-| `VIRTUAL_LABEL_HEIGHT` | Label height in inches | `6` | No |
+| `VIRTUAL_LABEL_WIDTH` | Label width in mm | `100` | No |
+| `VIRTUAL_LABEL_HEIGHT` | Label height in mm | `150` | No |
 | `VIRTUAL_OUTPUT_FORMAT` | Output format (`png`, `pdf`, `json`) | `png` | No |
 | `VIRTUAL_SAVE_DIRECTORY` | Directory to save generated labels | `./generated_labels` | No |
 | `API_PORT` | API server port | `3000` | No |
@@ -342,8 +342,8 @@ For virtual printing using the Labelary API (great for testing):
 ```env
 PRINTER_TYPE=virtual
 VIRTUAL_DPMM=8dpmm  # 6dpmm, 8dpmm, 12dpmm, 24dpmm
-VIRTUAL_LABEL_WIDTH=4  # inches
-VIRTUAL_LABEL_HEIGHT=6  # inches
+VIRTUAL_LABEL_WIDTH=100  # mm
+VIRTUAL_LABEL_HEIGHT=150  # mm
 VIRTUAL_OUTPUT_FORMAT=png  # png, pdf, json
 VIRTUAL_SAVE_DIRECTORY=./generated_labels  # Where to save labels
 ```

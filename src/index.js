@@ -23,8 +23,8 @@ const printerConfig = {
   productId: process.env.USB_PRODUCT_ID ? parseInt(process.env.USB_PRODUCT_ID, 16) : null,
   virtual: {
     dpmm: process.env.VIRTUAL_DPMM || '8dpmm',
-    labelWidth: process.env.VIRTUAL_LABEL_WIDTH || '4',
-    labelHeight: process.env.VIRTUAL_LABEL_HEIGHT || '6',
+    labelWidth: process.env.VIRTUAL_LABEL_WIDTH || '100',
+    labelHeight: process.env.VIRTUAL_LABEL_HEIGHT || '150',
     labelIndex: process.env.VIRTUAL_LABEL_INDEX || '0',
     outputFormat: process.env.VIRTUAL_OUTPUT_FORMAT || 'png',
     saveDirectory: process.env.VIRTUAL_SAVE_DIRECTORY || './generated_labels',
@@ -116,7 +116,7 @@ app.get('/printer/info', (req, res) => {
     ...(printerConfig.type === 'virtual' && {
       virtual: {
         dpmm: printerConfig.virtual.dpmm,
-        labelSize: `${printerConfig.virtual.labelWidth}x${printerConfig.virtual.labelHeight} inches`,
+        labelSize: `${printerConfig.virtual.labelWidth}x${printerConfig.virtual.labelHeight} mm`,
         outputFormat: printerConfig.virtual.outputFormat,
         returnResponse: printerConfig.virtual.returnResponse,
         apiEndpoint: `${printerConfig.virtual.baseUrl}/${printerConfig.virtual.dpmm}/labels/${printerConfig.virtual.labelWidth}x${printerConfig.virtual.labelHeight}/${printerConfig.virtual.labelIndex}/`
