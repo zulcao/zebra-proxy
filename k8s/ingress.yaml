@@ -4,13 +4,13 @@ metadata:
   name: zebra-proxy
 spec:
   rules:
-  - host: zebra-proxy.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: zebra-proxy
-            port:
-              number: 80
+    - host: zebra-proxy.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: zebra-proxy
+                port:
+                  number: 80

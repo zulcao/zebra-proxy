@@ -3,11 +3,11 @@ kind: ConfigMap
 metadata:
   name: zebra-proxy-config
 data:
-  PRINTER_TYPE: "virtual"
-  VIRTUAL_DPMM: "8dpmm"
-  VIRTUAL_LABEL_WIDTH: "100"
-  VIRTUAL_LABEL_HEIGHT: "150"
-  VIRTUAL_OUTPUT_FORMAT: "png"
-  VIRTUAL_SAVE_DIRECTORY: "/app/generated_labels"
-  VIRTUAL_BASE_URL: "http://api.labelary.com/v1/printers"
-  API_PORT: "3000"
+  PRINTER_TYPE: 'virtual'
+  VIRTUAL_DPMM: '8dpmm'
+  VIRTUAL_LABEL_WIDTH: '100'
+  VIRTUAL_LABEL_HEIGHT: '150'
+  VIRTUAL_OUTPUT_FORMAT: 'png'
+  VIRTUAL_SAVE_DIRECTORY: '/app/generated_labels'
+  VIRTUAL_BASE_URL: 'http://api.labelary.com/v1/printers'
+  API_PORT: '3000'

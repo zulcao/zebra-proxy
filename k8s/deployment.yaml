@@ -16,51 +16,51 @@ spec:
         app: zebra-proxy
     spec:
       containers:
-      - name: zebra-proxy
-        image: ghcr.io/zulcao/zebra-proxy:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: PRINTER_TYPE
-          value: "virtual"
-        - name: VIRTUAL_DPMM
-          value: "8dpmm"
-        - name: VIRTUAL_LABEL_WIDTH
-          value: "100"
-        - name: VIRTUAL_LABEL_HEIGHT
-          value: "150"
-        - name: VIRTUAL_OUTPUT_FORMAT
-          value: "png"
-        - name: VIRTUAL_SAVE_DIRECTORY
-          value: "/app/generated_labels"
-        - name: API_PORT
-          value: "3000"
-        volumeMounts:
-        - name: labels-storage
-          mountPath: /app/generated_labels
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
-            memory: "256Mi"
-            cpu: "200m"
+        - name: zebra-proxy
+          image: ghcr.io/zulcao/zebra-proxy:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PRINTER_TYPE
+              value: 'virtual'
+            - name: VIRTUAL_DPMM
+              value: '8dpmm'
+            - name: VIRTUAL_LABEL_WIDTH
+              value: '100'
+            - name: VIRTUAL_LABEL_HEIGHT
+              value: '150'
+            - name: VIRTUAL_OUTPUT_FORMAT
+              value: 'png'
+            - name: VIRTUAL_SAVE_DIRECTORY
+              value: '/app/generated_labels'
+            - name: API_PORT
+              value: '3000'
+          volumeMounts:
+            - name: labels-storage
+              mountPath: /app/generated_labels
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '100m'
+            limits:
+              memory: '256Mi'
+              cpu: '200m'
       volumes:
-      - name: labels-storage
-        persistentVolumeClaim:
-          claimName: zebra-proxy-labels-pvc
+        - name: labels-storage
+          persistentVolumeClaim:
+            claimName: zebra-proxy-labels-pvc
 ---
 apiVersion: v1
 kind: Service

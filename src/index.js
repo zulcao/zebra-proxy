@@ -28,15 +28,19 @@ const printerConfig = {
     labelIndex: process.env.VIRTUAL_LABEL_INDEX || '0',
     outputFormat: process.env.VIRTUAL_OUTPUT_FORMAT || 'png',
     saveDirectory: process.env.VIRTUAL_SAVE_DIRECTORY || './generated_labels',
-    baseUrl: process.env.VIRTUAL_BASE_URL || 'http://api.labelary.com/v1/printers'
-  }
+    baseUrl: process.env.VIRTUAL_BASE_URL || 'http://api.labelary.com/v1/printers',
+  },
 };
 
 console.log('Printer configuration:', {
   ...printerConfig,
   // Don't log sensitive details in production
-  host: printerConfig.type === 'tcp' ? printerConfig.host : 
-    printerConfig.type === 'usb' ? 'USB' : 'Virtual (Labelary API)'
+  host:
+    printerConfig.type === 'tcp'
+      ? printerConfig.host
+      : printerConfig.type === 'usb'
+        ? 'USB'
+        : 'Virtual (Labelary API)',
 });
 
 // Health check endpoint
@@ -44,7 +48,7 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    printerType: printerConfig.type
+    printerType: printerConfig.type,
   });
 });
 
@@ -53,7 +57,7 @@ app.post('/print', async (req, res) => {
   try {
     // Get the data to print from request body
     let printData;
-    
+
     if (req.is('application/json')) {
       // If JSON, expect a 'data' field
       printData = req.body.data || JSON.stringify(req.body);
@@ -68,35 +72,37 @@ app.post('/print', async (req, res) => {
     if (!printData) {
       return res.status(400).json({
         error: 'No print data provided',
-        message: 'Please provide data to print in the request body'
+        message: 'Please provide data to print in the request body',
       });
     }
 
     console.log(`Received print request, data length: ${printData.length} bytes`);
-    console.log('Print data preview:', printData.substring(0, 200) + (printData.length > 200 ? '...' : ''));
+    console.log(
+      'Print data preview:',
+      printData.substring(0, 200) + (printData.length > 200 ? '...' : '')
+    );
 
     // Create printer instance
     const printer = PrinterFactory.createPrinter(printerConfig);
-    
+
     // Send to printer
     const result = await printer.print(printData);
-    
+
     res.json({
       success: true,
       message: 'Print job sent successfully',
       printerType: printerConfig.type,
       result: result,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Print error:', error);
-    
+
     res.status(500).json({
       success: false,
       error: error.message,
       printerType: printerConfig.type,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -107,11 +113,13 @@ app.get('/printer/info', (req, res) => {
     type: printerConfig.type,
     ...(printerConfig.type === 'tcp' && {
       host: printerConfig.host,
-      port: printerConfig.port
+      port: printerConfig.port,
     }),
     ...(printerConfig.type === 'usb' && {
       vendorId: `0x${printerConfig.vendorId.toString(16)}`,
-      productId: printerConfig.productId ? `0x${printerConfig.productId.toString(16)}` : 'auto-detect'
+      productId: printerConfig.productId
+        ? `0x${printerConfig.productId.toString(16)}`
+        : 'auto-detect',
     }),
     ...(printerConfig.type === 'virtual' && {
       virtual: {
@@ -119,9 +127,9 @@ app.get('/printer/info', (req, res) => {
         labelSize: `${printerConfig.virtual.labelWidth}x${printerConfig.virtual.labelHeight} mm`,
         outputFormat: printerConfig.virtual.outputFormat,
         returnResponse: printerConfig.virtual.returnResponse,
-        apiEndpoint: `${printerConfig.virtual.baseUrl}/${printerConfig.virtual.dpmm}/labels/${printerConfig.virtual.labelWidth}x${printerConfig.virtual.labelHeight}/${printerConfig.virtual.labelIndex}/`
-      }
-    })
+        apiEndpoint: `${printerConfig.virtual.baseUrl}/${printerConfig.virtual.dpmm}/labels/${printerConfig.virtual.labelWidth}x${printerConfig.virtual.labelHeight}/${printerConfig.virtual.labelIndex}/`,
+      },
+    }),
   });
 });
 
@@ -130,27 +138,27 @@ app.get('/printer/test', async (req, res) => {
   if (printerConfig.type !== 'virtual') {
     return res.status(400).json({
       error: 'Test endpoint only available for virtual printers',
-      currentType: printerConfig.type
+      currentType: printerConfig.type,
     });
   }
 
   try {
     const printer = PrinterFactory.createPrinter(printerConfig);
     const result = await printer.testConnection();
-    
+
     res.json({
       success: true,
       message: 'Virtual printer test successful',
       result: result,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Virtual printer test error:', error);
-    
+
     res.status(500).json({
       success: false,
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -160,27 +168,27 @@ app.get('/labels', (req, res) => {
   if (printerConfig.type !== 'virtual') {
     return res.status(400).json({
       error: 'Labels endpoint only available for virtual printers',
-      currentType: printerConfig.type
+      currentType: printerConfig.type,
     });
   }
 
   try {
     const printer = PrinterFactory.createPrinter(printerConfig);
     const labels = printer.listSavedLabels();
-    
+
     res.json({
       success: true,
       labels: labels,
       count: labels.length,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Error listing labels:', error);
-    
+
     res.status(500).json({
       success: false,
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -190,7 +198,7 @@ app.get('/labels/:filename', (req, res) => {
   if (printerConfig.type !== 'virtual') {
     return res.status(400).json({
       error: 'Labels endpoint only available for virtual printers',
-      currentType: printerConfig.type
+      currentType: printerConfig.type,
     });
   }
 
@@ -198,52 +206,51 @@ app.get('/labels/:filename', (req, res) => {
     const { filename } = req.params;
     const saveDirectory = printerConfig.virtual.saveDirectory;
     const filepath = path.join(saveDirectory, filename);
-    
+
     // Security check: ensure file is within save directory
     const resolvedPath = path.resolve(filepath);
     const resolvedSaveDir = path.resolve(saveDirectory);
-    
+
     if (!resolvedPath.startsWith(resolvedSaveDir)) {
       return res.status(403).json({
-        error: 'Access denied: Invalid file path'
+        error: 'Access denied: Invalid file path',
       });
     }
 
     if (!fs.existsSync(filepath)) {
       return res.status(404).json({
-        error: 'File not found'
+        error: 'File not found',
       });
     }
 
     // Set appropriate content type based on file extension
     const ext = path.extname(filename).toLowerCase();
     let contentType = 'application/octet-stream';
-    
+
     switch (ext) {
-    case '.png':
-      contentType = 'image/png';
-      break;
-    case '.pdf':
-      contentType = 'application/pdf';
-      break;
-    case '.json':
-      contentType = 'application/json';
-      break;
+      case '.png':
+        contentType = 'image/png';
+        break;
+      case '.pdf':
+        contentType = 'application/pdf';
+        break;
+      case '.json':
+        contentType = 'application/json';
+        break;
     }
 
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-    
+
     const fileStream = fs.createReadStream(filepath);
     fileStream.pipe(res);
-    
   } catch (error) {
     console.error('Error serving label file:', error);
-    
+
     res.status(500).json({
       success: false,
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -253,7 +260,7 @@ app.delete('/labels/:filename', (req, res) => {
   if (printerConfig.type !== 'virtual') {
     return res.status(400).json({
       error: 'Labels endpoint only available for virtual printers',
-      currentType: printerConfig.type
+      currentType: printerConfig.type,
     });
   }
 
@@ -261,19 +268,19 @@ app.delete('/labels/:filename', (req, res) => {
     const { filename } = req.params;
     const printer = PrinterFactory.createPrinter(printerConfig);
     printer.deleteSavedLabel(filename);
-    
+
     res.json({
       success: true,
       message: `Label ${filename} deleted successfully`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Error deleting label:', error);
-    
+
     res.status(500).json({
       success: false,
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -533,18 +540,14 @@ app.use((error, req, res) => {
   res.status(500).json({
     success: false,
     error: 'Internal server error',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
 // 404 handler
 app.all('/*splat', (req, res) => {
-  const endpoints = [
-    'GET /health',
-    'POST /print',
-    'GET /printer/info'
-  ];
-  
+  const endpoints = ['GET /health', 'POST /print', 'GET /printer/info'];
+
   if (printerConfig.type === 'virtual') {
     endpoints.push(
       'GET /printer/test (virtual only)',
@@ -557,7 +560,7 @@ app.all('/*splat', (req, res) => {
 
   res.status(404).json({
     error: `Endpoint ${req.originalUrl} not found`,
-    availableEndpoints: endpoints
+    availableEndpoints: endpoints,
   });
 });
 

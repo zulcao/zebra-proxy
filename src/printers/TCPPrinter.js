@@ -9,7 +9,7 @@ class TCPPrinter {
   async print(data) {
     return new Promise((resolve, reject) => {
       const client = new net.Socket();
-      
+
       client.connect(this.port, this.host, () => {
         console.log(`Connected to printer at ${this.host}:${this.port}`);
         client.write(data);

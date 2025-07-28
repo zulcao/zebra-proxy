@@ -10,7 +10,7 @@ class USBPrinter {
 
   findPrinter() {
     const devices = usb.getDeviceList();
-    
+
     // If specific product ID is provided, look for exact match
     if (this.productId) {
       this.device = usb.findByIds(this.vendorId, this.productId);
@@ -19,7 +19,7 @@ class USBPrinter {
         return true;
       }
     }
-    
+
     // Otherwise, find first Zebra device
     for (const device of devices) {
       if (device.deviceDescriptor.idVendor === this.vendorId) {
@@ -28,7 +28,7 @@ class USBPrinter {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -38,21 +38,21 @@ class USBPrinter {
     }
 
     this.device.open();
-    
+
     // Get the first interface
     const interface_ = this.device.interface(0);
-    
+
     // Detach kernel driver if active (Linux/macOS)
     if (interface_.isKernelDriverActive()) {
       interface_.detachKernelDriver();
     }
-    
+
     interface_.claim();
-    
+
     // Find the OUT endpoint
     const endpoints = interface_.endpoints;
-    this.endpoint = endpoints.find(ep => ep.direction === 'out');
-    
+    this.endpoint = endpoints.find((ep) => ep.direction === 'out');
+
     if (!this.endpoint) {
       throw new Error('No OUT endpoint found on USB device');
     }
@@ -67,10 +67,10 @@ class USBPrinter {
 
       try {
         this.initializeDevice();
-        
+
         // Convert string to buffer if needed
         const buffer = Buffer.isBuffer(data) ? data : Buffer.from(data, 'utf8');
-        
+
         this.endpoint.transfer(buffer, (error) => {
           if (error) {
             console.error('USB transfer error:', error);
@@ -79,7 +79,7 @@ class USBPrinter {
             console.log('USB print job sent successfully');
             resolve('Print job sent successfully via USB');
           }
-          
+
           // Close the device
           try {
             this.device.close();

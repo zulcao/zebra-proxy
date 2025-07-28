@@ -12,7 +12,7 @@ class VirtualPrinter {
     this.labelIndex = options.labelIndex || '0';
     this.outputFormat = options.outputFormat || 'png'; // png, pdf, json
     this.saveDirectory = options.saveDirectory || './generated_labels';
-    
+
     // Ensure save directory exists
     this.ensureDirectoryExists();
   }
@@ -26,18 +26,18 @@ class VirtualPrinter {
 
   generateFilename() {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const extension = this.outputFormat === 'pdf' ? 'pdf' : 
-      this.outputFormat === 'json' ? 'json' : 'png';
+    const extension =
+      this.outputFormat === 'pdf' ? 'pdf' : this.outputFormat === 'json' ? 'json' : 'png';
     return `label_${timestamp}.${extension}`;
   }
 
   async print(zplData) {
     const url = `${this.baseUrl}/${this.dpmm}/labels/${this.labelWidth / 25.4}x${this.labelHeight / 25.4}/${this.labelIndex}/`;
-    
+
     return new Promise((resolve, reject) => {
       // Determine protocol
       const protocol = this.baseUrl.startsWith('https') ? https : http;
-      
+
       // Prepare request options
       const postData = zplData;
       const options = {
@@ -45,8 +45,8 @@ class VirtualPrinter {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Content-Length': Buffer.byteLength(postData),
-          'Accept': this.getAcceptHeader()
-        }
+          Accept: this.getAcceptHeader(),
+        },
       };
 
       console.log(`Sending ZPL to Labelary API: ${url}`);
@@ -64,11 +64,11 @@ class VirtualPrinter {
           if (res.statusCode === 200) {
             const totalCount = res.headers['x-total-count'] || '1';
             console.log(`Labelary API success: Generated ${totalCount} label(s)`);
-            
+
             // Generate filename and save the file
             const filename = this.generateFilename();
             const filepath = path.join(this.saveDirectory, filename);
-            
+
             try {
               // Save the file
               if (this.outputFormat === 'json') {
@@ -76,9 +76,9 @@ class VirtualPrinter {
               } else {
                 fs.writeFileSync(filepath, data);
               }
-              
+
               console.log(`Label saved to: ${filepath}`);
-              
+
               let result = {
                 success: true,
                 message: 'Label processed and saved successfully',
@@ -87,7 +87,7 @@ class VirtualPrinter {
                 dataSize: data.length,
                 filename: filename,
                 filepath: filepath,
-                savedAt: new Date().toISOString()
+                savedAt: new Date().toISOString(),
               };
 
               resolve(result);
@@ -121,19 +121,20 @@ class VirtualPrinter {
 
   getAcceptHeader() {
     switch (this.outputFormat.toLowerCase()) {
-    case 'pdf':
-      return 'application/pdf';
-    case 'json':
-      return 'application/json';
-    case 'png':
-    default:
-      return 'image/png';
+      case 'pdf':
+        return 'application/pdf';
+      case 'json':
+        return 'application/json';
+      case 'png':
+      default:
+        return 'image/png';
     }
   }
 
   // Helper method to test ZPL with a simple label
   async testConnection() {
-    const testZpl = '^XA^FO50,50^A0N,50,50^FDTest Label^FS^FO50,120^A0N,30,30^FDVirtual Printer^FS^XZ';
+    const testZpl =
+      '^XA^FO50,50^A0N,50,50^FDTest Label^FS^FO50,120^A0N,30,30^FDVirtual Printer^FS^XZ';
     try {
       const result = await this.print(testZpl);
       console.log('Virtual printer test successful:', result);
@@ -153,8 +154,8 @@ class VirtualPrinter {
 
       const files = fs.readdirSync(this.saveDirectory);
       const labelFiles = files
-        .filter(file => /\.(png|pdf|json)$/i.test(file))
-        .map(file => {
+        .filter((file) => /\.(png|pdf|json)$/i.test(file))
+        .map((file) => {
           const filepath = path.join(this.saveDirectory, file);
           const stats = fs.statSync(filepath);
           return {
@@ -163,7 +164,7 @@ class VirtualPrinter {
             size: stats.size,
             created: stats.birthtime,
             modified: stats.mtime,
-            extension: path.extname(file).toLowerCase().substring(1)
+            extension: path.extname(file).toLowerCase().substring(1),
           };
         })
         .sort((a, b) => b.created - a.created); // Sort by creation date, newest first

@@ -34,6 +34,7 @@ A simple REST API that acts as a proxy to send print data to Zebra printers via 
 ### 🐳 Quick Start with Docker
 
 #### Using Docker Compose (Recommended)
+
 ```bash
 # Start the application
 docker-compose up -d
@@ -46,6 +47,7 @@ docker-compose down
 ```
 
 #### Using Docker directly
+
 ```bash
 # Build the image
 docker build -t zebra-proxy .
@@ -64,7 +66,9 @@ docker run -p 3000:3000 \
 ### ⚙️ Environment Configuration
 
 #### Docker Compose Environment Variables
+
 Edit `docker-compose.yml` or create a `.env` file:
+
 ```env
 PRINTER_TYPE=virtual
 VIRTUAL_DPMM=8dpmm
@@ -75,12 +79,15 @@ API_PORT=3000
 ```
 
 #### Volume Persistence
+
 Generated labels are stored in a Docker volume (`labels_data`) to persist between container restarts.
 
 ### 🔧 Advanced Docker Configurations
 
 #### For USB Printer Access
+
 Uncomment these lines in `docker-compose.yml`:
+
 ```yaml
 privileged: true
 devices:
@@ -90,6 +97,7 @@ devices:
 ### ☸️ Kubernetes Deployment
 
 Deploy to Kubernetes using the provided manifests:
+
 ```bash
 # Apply all configurations
 kubectl apply -f k8s/
@@ -108,6 +116,7 @@ This project includes comprehensive GitHub Actions workflows for automated build
 ### Workflows
 
 #### 1. **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
+
 - **Triggers**: Push to `main`/`develop`, PRs to `main`
 - **Jobs**:
   - **Test**: Runs on Node.js 18.x and 20.x
@@ -115,6 +124,7 @@ This project includes comprehensive GitHub Actions workflows for automated build
   - **Deploy**: Builds and pushes Docker image to GitHub Container Registry
 
 #### 2. **Docker Build** (`.github/workflows/docker-build.yml`)
+
 - **Triggers**: Push to `main`/`develop`, tags, PRs
 - **Features**:
   - Multi-platform builds (AMD64, ARM64)
@@ -123,6 +133,7 @@ This project includes comprehensive GitHub Actions workflows for automated build
   - Only pushes images on non-PR events
 
 #### 3. **Release** (`.github/workflows/release.yml`)
+
 - **Triggers**: Version tags (`v*.*.*`)
 - **Features**:
   - Automatic GitHub releases with changelogs
@@ -130,6 +141,7 @@ This project includes comprehensive GitHub Actions workflows for automated build
   - Multi-platform Docker images
 
 #### 4. **Code Quality** (`.github/workflows/code-quality.yml`)
+
 - **Triggers**: Push/PR to main branches
 - **Features**:
   - ESLint with SARIF reporting
@@ -153,8 +165,9 @@ docker pull ghcr.io/zulcao/zebra-proxy:develop
 ### Dependency Updates
 
 Dependabot is configured to automatically update:
+
 - npm dependencies (weekly)
-- Docker base images (weekly)  
+- Docker base images (weekly)
 - GitHub Actions (weekly)
 
 ### Creating a Release
@@ -171,7 +184,8 @@ Dependabot is configured to automatically update:
    - Tag Docker images with semantic versions
 
 ## Configuration
-```
+
+````
 
 #### Kubernetes Components
 - **Deployment**: `k8s/deployment.yaml` - Main application deployment with 2 replicas
@@ -185,14 +199,16 @@ Dependabot is configured to automatically update:
 1. Install dependencies:
 ```bash
 npm install
-```
+````
 
 2. Copy the environment configuration:
+
 ```bash
 cp .env.example .env
 ```
 
 3. Edit `.env` file with your printer settings:
+
 ```env
 # For TCP/Network printer:
 PRINTER_TYPE=tcp
@@ -220,11 +236,13 @@ API_PORT=3000
 ### Start the server
 
 Development mode (with auto-restart):
+
 ```bash
 npm run dev
 ```
 
 Production mode:
+
 ```bash
 npm start
 ```
@@ -232,12 +250,15 @@ npm start
 ### API Endpoints
 
 #### Health Check
+
 ```bash
 GET /health
 ```
+
 Returns the API status and configuration.
 
 #### Send Print Job
+
 ```bash
 POST /print
 ```
@@ -245,6 +266,7 @@ POST /print
 Send data to the printer. Accepts various content types:
 
 **JSON data:**
+
 ```bash
 curl -X POST http://localhost:3000/print \
   -H "Content-Type: application/json" \
@@ -252,6 +274,7 @@ curl -X POST http://localhost:3000/print \
 ```
 
 **Plain text (ZPL commands):**
+
 ```bash
 curl -X POST http://localhost:3000/print \
   -H "Content-Type: text/plain" \
@@ -259,68 +282,82 @@ curl -X POST http://localhost:3000/print \
 ```
 
 **Raw data:**
+
 ```bash
 curl -X POST http://localhost:3000/print \
   --data-raw "^XA^FO50,50^A0N,50,50^FDHello World^FS^XZ"
 ```
 
 #### Get Printer Info
+
 ```bash
 GET /printer/info
 ```
+
 Returns current printer configuration details.
 
 #### Test Virtual Printer
+
 ```bash
 GET /printer/test
 ```
+
 Tests the virtual printer connection (only available when `PRINTER_TYPE=virtual`). Sends a sample ZPL to the Labelary API.
 
 #### List Saved Labels
+
 ```bash
 GET /labels
 ```
+
 Returns a list of all saved label files (only available when `PRINTER_TYPE=virtual`).
 
 #### View/Download Label File
+
 ```bash
 GET /labels/:filename
 ```
+
 Serves a specific label file for viewing or download (only available when `PRINTER_TYPE=virtual`).
 
 #### Delete Label File
+
 ```bash
 DELETE /labels/:filename
 ```
+
 Deletes a specific saved label file (only available when `PRINTER_TYPE=virtual`).
 
 #### Label Viewer Web Interface
+
 ```bash
 GET /viewer
 ```
+
 Opens a web interface to view, manage, and delete saved labels (only available when `PRINTER_TYPE=virtual`). Perfect for testing and previewing labels in a browser.
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `PRINTER_TYPE` | Printer connection type (`tcp`, `usb`, or `virtual`) | `tcp` | Yes |
-| `PRINTER_HOST` | IP address for TCP connection | - | Yes (for TCP) |
-| `PRINTER_PORT` | Port for TCP connection | `9100` | No |
-| `USB_VENDOR_ID` | USB vendor ID (hex format) | `0x0a5f` | No |
-| `USB_PRODUCT_ID` | USB product ID (hex format) | auto-detect | No |
-| `VIRTUAL_DPMM` | Print density for virtual printer | `8dpmm` | No |
-| `VIRTUAL_LABEL_WIDTH` | Label width in mm | `100` | No |
-| `VIRTUAL_LABEL_HEIGHT` | Label height in mm | `150` | No |
-| `VIRTUAL_OUTPUT_FORMAT` | Output format (`png`, `pdf`, `json`) | `png` | No |
-| `VIRTUAL_SAVE_DIRECTORY` | Directory to save generated labels | `./generated_labels` | No |
-| `API_PORT` | API server port | `3000` | No |
+| Variable                 | Description                                          | Default              | Required      |
+| ------------------------ | ---------------------------------------------------- | -------------------- | ------------- |
+| `PRINTER_TYPE`           | Printer connection type (`tcp`, `usb`, or `virtual`) | `tcp`                | Yes           |
+| `PRINTER_HOST`           | IP address for TCP connection                        | -                    | Yes (for TCP) |
+| `PRINTER_PORT`           | Port for TCP connection                              | `9100`               | No            |
+| `USB_VENDOR_ID`          | USB vendor ID (hex format)                           | `0x0a5f`             | No            |
+| `USB_PRODUCT_ID`         | USB product ID (hex format)                          | auto-detect          | No            |
+| `VIRTUAL_DPMM`           | Print density for virtual printer                    | `8dpmm`              | No            |
+| `VIRTUAL_LABEL_WIDTH`    | Label width in mm                                    | `100`                | No            |
+| `VIRTUAL_LABEL_HEIGHT`   | Label height in mm                                   | `150`                | No            |
+| `VIRTUAL_OUTPUT_FORMAT`  | Output format (`png`, `pdf`, `json`)                 | `png`                | No            |
+| `VIRTUAL_SAVE_DIRECTORY` | Directory to save generated labels                   | `./generated_labels` | No            |
+| `API_PORT`               | API server port                                      | `3000`               | No            |
 
 ### TCP/Network Configuration
 
 For network-connected Zebra printers:
+
 ```env
 PRINTER_TYPE=tcp
 PRINTER_HOST=192.168.1.100
@@ -330,6 +367,7 @@ PRINTER_PORT=9100
 ### USB Configuration
 
 For USB-connected Zebra printers:
+
 ```env
 PRINTER_TYPE=usb
 USB_VENDOR_ID=0x0a5f
@@ -339,6 +377,7 @@ USB_VENDOR_ID=0x0a5f
 ### Virtual Configuration
 
 For virtual printing using the Labelary API (great for testing):
+
 ```env
 PRINTER_TYPE=virtual
 VIRTUAL_DPMM=8dpmm  # 6dpmm, 8dpmm, 12dpmm, 24dpmm
@@ -364,28 +403,33 @@ This creates a label with "Hello World" and "Zebra Proxy API" text.
 ## Troubleshooting
 
 ### TCP Connection Issues
+
 - Verify the printer IP address and port (usually 9100)
 - Check network connectivity: `ping <printer_ip>`
 - Ensure the printer's network settings allow connections
 
 ### USB Connection Issues
+
 - Check if the printer is properly connected and powered on
 - Verify USB vendor/product IDs using `lsusb` (Linux) or System Information (macOS)
 - On Linux, you might need to run with sudo or configure udev rules
 - On macOS, you might need to install additional drivers
 
 ### Virtual Printer Issues
+
 - Check internet connectivity for Labelary API access
 - Verify ZPL syntax is correct
 - Note: Free Labelary API has rate limits (3 requests/second, 5,000/day)
 - For high-volume usage, consider Labelary premium plans
 
 ### Permission Issues (USB on Linux/macOS)
+
 You may need to add your user to the appropriate group or run with elevated permissions for USB access.
 
 ## API Response Examples
 
 ### Successful Print Job
+
 ```json
 {
   "success": true,
@@ -397,6 +441,7 @@ You may need to add your user to the appropriate group or run with elevated perm
 ```
 
 ### Error Response
+
 ```json
 {
   "success": false,
