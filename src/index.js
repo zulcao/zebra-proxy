@@ -7,9 +7,13 @@ const PrinterFactory = require('./printers/PrinterFactory');
 
 const app = express();
 const PORT = process.env.API_PORT || 3000;
+const corsOption = {
+    origin: ['https://zebra-labels.zulcao.workers.dev', 'http://localhost:5173'],
+    methods: ["GET", "POST"],
+}
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOption));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.text({ limit: '10mb' }));
 app.use(express.raw({ limit: '10mb' }));
