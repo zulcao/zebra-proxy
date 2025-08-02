@@ -18,7 +18,7 @@ class TCPPrinter {
       client.on('data', (response) => {
         console.log('Printer response:', response.toString());
         client.destroy();
-        resolve(response);
+        resolve(response.toString());
       });
 
       client.on('close', () => {
@@ -37,7 +37,7 @@ class TCPPrinter {
           client.destroy();
           resolve('Print job sent (timeout)');
         }
-      }, 5000);
+      }, 100);
     });
   }
 }
