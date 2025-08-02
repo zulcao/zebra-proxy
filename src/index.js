@@ -8,9 +8,12 @@ const PrinterFactory = require('./printers/PrinterFactory');
 const app = express();
 const PORT = process.env.API_PORT || 3000;
 const corsOption = {
-    origin: ['https://zebra-labels.zulcao.workers.dev', 'http://localhost:5173'],
-    methods: ["GET", "POST"],
-}
+  origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['https://zebra-labels.zulcao.workers.dev', 'http://localhost:5173'],
+  credentials: true,
+  optionsSuccessStatus: 200, // For legacy browser support
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+};
 
 // Middleware
 app.use(cors(corsOption));
