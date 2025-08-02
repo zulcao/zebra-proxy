@@ -109,7 +109,7 @@ class VirtualPrinter {
       });
 
       // Set timeout
-      req.setTimeout(10000, () => {
+      req.setTimeout(process.env.ZEBRA_VIRTUAL_TIMEOUT || 10000, () => {
         req.destroy();
         reject(new Error('Request timeout'));
       });

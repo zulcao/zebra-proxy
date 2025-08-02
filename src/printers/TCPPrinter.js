@@ -37,7 +37,7 @@ class TCPPrinter {
           client.destroy();
           resolve('Print job sent (timeout)');
         }
-      }, 100);
+      }, process.env.ZEBRA_TCP_TIMEOUT || 5000); // Default timeout of 5 seconds
     });
   }
 }
