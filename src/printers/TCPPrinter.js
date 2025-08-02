@@ -16,9 +16,9 @@ class TCPPrinter {
       });
 
       client.on('data', (response) => {
-        console.log('Printer response:', response.toString());
+        console.log('Printer response:', response.toString('ascii'));
         client.destroy();
-        resolve(response.toString());
+        resolve(response.toString('ascii'));
       });
 
       client.on('close', () => {
