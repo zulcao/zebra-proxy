@@ -56,7 +56,7 @@ jobs:
         run: npm audit --audit-level moderate
 
       - name: Run Dockerfile security scan
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile
           failure-threshold: error
