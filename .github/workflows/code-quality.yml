@@ -61,7 +61,7 @@ jobs:
 
       - name: Upload ESLint results to GitHub Security
         if: hashFiles('reports/eslint-results.sarif') != ''
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: reports/eslint-results.sarif
           wait-for-processing: true
