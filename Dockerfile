@@ -1,5 +1,5 @@
 # Multi-stage Dockerfile for production optimization
-FROM node:24-alpine AS base
+FROM node:25-alpine AS base
 
 # Install build dependencies for native modules (including USB support)
 RUN apk add --no-cache \
