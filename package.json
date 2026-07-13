@@ -27,7 +27,7 @@
     "usb": "^3.0.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
+    "@eslint/js": "^10.0.1",
     "@microsoft/eslint-formatter-sarif": "^3.0.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
